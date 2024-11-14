@@ -105,7 +105,7 @@ def service_information_response(state):
 # Node for founding-related responses
 @traceable
 def founding_information_response(state):
-    pdf_text = load_pdf_content("AI Engineer.pdf")
+    pdf_text = load_pdf_content(file_path)
     
     prompt = PromptTemplate(
     template="""\
