@@ -14,8 +14,8 @@ from langchain_community.document_loaders.recursive_url_loader import RecursiveU
 load_dotenv()
 groq_key = os.getenv("GROQ_API_KEY")
 file_path = os.getenv("PDF_PATH")
+promtior_services_url= os.getenv("PROMTIOR_URL")
 
-# Set up models to answer questions
 GROQ_LLM_70 = ChatGroq(model="llama3-70b-8192")
 GROQ_LLM_8 = ChatGroq(model="llama3-8b-8192")
 
@@ -23,10 +23,8 @@ conversation_with_summary_70b = ConversationChain(llm=GROQ_LLM_70)
 conversation_with_summary_8b = ConversationChain(llm=GROQ_LLM_8)
 
 def load_pdf_content(pdf_path):
-    # Cargar el documento PDF
     loader = PyPDFLoader(pdf_path)
     documents = loader.load()
-    # Cargar solo las páginas 3 y 4 (índices 2 y 3)
     pdf_text = "\n".join([doc.page_content for doc in documents[2:4]])
     return pdf_text
 
@@ -34,13 +32,12 @@ def custom_extractor(html_content):
     soup = BeautifulSoup(html_content, "html.parser")
     return soup.get_text()
 
-# Instantiate the RecursiveUrlLoader
-loader = RecursiveUrlLoader(url="https://www.promtior.ai/service", extractor=custom_extractor)
 
-# Load the data from the website
+loader = RecursiveUrlLoader(url=promtior_services_url, extractor=custom_extractor)
+
 docs = loader.load()
 
-# Define the conversation state
+
 class GraphState(TypedDict):
     initial_question: str
     question_category: str
@@ -48,7 +45,7 @@ class GraphState(TypedDict):
     num_steps: int
     conversation_history: List[Dict[str, str]]
 
-# Node for question categorization
+
 @traceable
 def categorize_question(state):
     prompt_template = """\
@@ -102,7 +99,6 @@ def service_information_response(state):
 
     return state
 
-# Node for founding-related responses
 @traceable
 def founding_information_response(state):
     pdf_text = load_pdf_content(file_path)
@@ -125,7 +121,7 @@ def founding_information_response(state):
 
     return state
 
-# Node for general inquiries
+
 @traceable
 def other_inquiry_response(state):
     state["final_response"] = "I'm sorry, I don't have information on that."
@@ -134,12 +130,12 @@ def other_inquiry_response(state):
     )
     return state
 
-# State printer
+
 def state_printer(state):
     print(f"{state['final_response']}\n")
     return state
 
-# Function to route responses
+
 def route_to_respond(state):
     question_category = state['question_category']
     if question_category == "service":
@@ -149,10 +145,9 @@ def route_to_respond(state):
     else:
         return "other_inquiry_response"
 
-# Set up the workflow
+
 workflow = StateGraph(GraphState)
 
-# Define nodes and transitions
 workflow.add_node("categorize_question", categorize_question)
 workflow.add_node("service_information_response", service_information_response)
 workflow.add_node("founding_information_response", founding_information_response)
