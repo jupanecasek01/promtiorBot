@@ -16,7 +16,7 @@ class QuestionRequest(BaseModel):
     conversation_id: str = ""
 
 
-@app.post("/ask")
+@app.post("/ask%0A")
 async def ask(data: QuestionRequest):
     question = data.question
     conversation_id = data.conversation_id
