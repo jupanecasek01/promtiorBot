@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from app.bot import execute_agent
+from bot import execute_agent
 import uvicorn
 
 app = FastAPI()
@@ -16,7 +16,7 @@ class QuestionRequest(BaseModel):
     conversation_id: str = ""
 
 
-@app.post("/ask%0A")
+@app.post("/")
 async def ask(data: QuestionRequest):
     question = data.question
     conversation_id = data.conversation_id
