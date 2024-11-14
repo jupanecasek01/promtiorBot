@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from bot import execute_agent  # Suponiendo que tienes un archivo bot.py con tu lógica
-import uvicorn
+from bot import execute_agent  # Asegúrate de que este archivo y función existan
 
 app = FastAPI()
 
@@ -26,6 +25,3 @@ async def ask(data: QuestionRequest):
     
     # Asegúrate de devolver la respuesta que tiene la clave 'final_response'
     return {"response": response["final_response"]}
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080)
