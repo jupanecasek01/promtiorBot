@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - promtior-bot-prueba
+name: Build and deploy Python app to Azure Web App - prueba-tecnica
 
 on:
   push:
@@ -65,14 +65,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_7F67D2A39E8C4DC39DECAF79A0BF1202 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A80344050AEA46C7AEF685209B9330E7 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_30A524A46AC74A929EFF5EB94BA4C345 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3AEF7F084A584269BEA78C9133FFC800 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_EFCE402C3733493798277AF6393773C0 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_AA55F2AAA21848628E7CF9580B739320 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'promtior-bot-prueba'
+          app-name: 'prueba-tecnica'
           slot-name: 'Production'
           
