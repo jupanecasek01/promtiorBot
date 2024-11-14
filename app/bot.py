@@ -13,6 +13,7 @@ from langchain_community.document_loaders.recursive_url_loader import RecursiveU
 
 load_dotenv()
 groq_key = os.getenv("GROQ_API_KEY")
+file_path = os.getenv("PDF_PATH")
 
 # Set up models to answer questions
 GROQ_LLM_70 = ChatGroq(model="llama3-70b-8192")
@@ -75,7 +76,7 @@ def categorize_question(state):
 
 @traceable
 def service_information_response(state):
-    pdf_text = load_pdf_content("AI Engineer.pdf")
+    pdf_text = load_pdf_content(file_path)
     web_text = docs
 
     prompt = PromptTemplate(
@@ -193,9 +194,9 @@ def retrieve_state(conversation_id):
         "conversation_id": conversation_id,
     }
 
-# Function to execute the chatbot (síncrona)
+
 def execute_agent(question, conversation_id):
-    global states  # Ensure state is recognized as global
+    global states  
     state = retrieve_state(conversation_id)
     state["initial_question"] = question
     states.append(state)
