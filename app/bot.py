@@ -25,13 +25,14 @@ conversation_with_summary_8b = ConversationChain(llm=GROQ_LLM_8)
 def load_pdf_content(pdf_path):
     loader = PyPDFLoader(pdf_path)
     documents = loader.load()
-    pdf_text = "\n".join([doc.page_content for doc in documents[2:4]])
+    pdf_text = "\n".join([doc.page_content for doc in documents[2:5]])
     return pdf_text
 
 def custom_extractor(html_content):
     soup = BeautifulSoup(html_content, "html.parser")
-    return soup.get_text()
-
+    text = soup.get_text()
+    cleaned_text = " ".join(text.split())
+    return cleaned_text
 
 loader = RecursiveUrlLoader(url=promtior_services_url, extractor=custom_extractor)
 
@@ -197,3 +198,4 @@ def execute_agent(question, conversation_id):
     states.append(state)
     output = app.invoke(state)
     return output
+
