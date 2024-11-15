@@ -1,5 +1,5 @@
 
-### **1. Projecto**
+### **1. Proyecto**
 
 #### **Arquitectura y Funcionalidades Principales**
 
@@ -15,6 +15,16 @@
 3. **Gestión de conversación**:
    - El chatbot mantiene un historial de la conversación mediante un identificador de conversación (`conversation_id`). Esto le permite contextualizar cada respuesta basada en las interacciones anteriores del usuario, proporcionando una experiencia de usuario más coherente.
 
+está disponible.
+
+4. **Tecnologías utilizadas**:
+   - **LangChain**: Para el procesamiento del lenguaje natural y la integración de modelos de lenguaje.
+   - **Groq con LLaMA3**: Usado como el modelo de lenguaje base para las interacciones.
+   - **LangGraph**: Utilizado para gestionar el flujo de trabajo y la estructura del chatbot.
+   - **LangSmith**: Para trazar y monitorear el flujo de trabajo, asegurando la trazabilidad de las interacciones.
+   - **PyPDFLoader**: Para cargar y procesar el contenido de documentos PDF.
+   - **RecursiveUrlLoader**: Para extraer información relevante de sitios web.
+   - 
 #### **Desafíos y soluciones**
 
 Algunos desafíos fueron:
