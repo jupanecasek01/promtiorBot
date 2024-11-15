@@ -9,7 +9,7 @@
 
 2. **Generación de respuestas basada en fuentes de datos**:
    - **Para preguntas sobre servicios**: El chatbot combina información obtenida tanto del sitio web de Promtior como de un PDF con información relevante de la empresa.
-   - **Para preguntas sobre la fundación de la empresa**: El bot se enfoca exclusivamente en información extraída del PDF, ignorando la web.
+   - **Para preguntas sobre la fundación de la empresa**: El bot se enfoca exclusivamente en información extraída del PDF, ignorando la web. Esto es porque en la web no encontre informacion relevante sobre la fundación.
    - **Para preguntas irrelevantes (Other)**: El chatbot devuelve una respuesta predeterminada indicando que la consulta no es relevante o que la información no está disponible.
 
 3. **Gestión de conversación**:
@@ -32,7 +32,7 @@ Algunos desafíos fueron:
 - **Optimización de flujo en LangGraph**: Configurar el flujo de trabajo para que cada paso de procesamiento se ejecute de manera eficiente sin sobrecargar el modelo.
 
 
-### **3. Instrucciones para probar el POST**
+### **2. Instrucciones para probar el POST**
 
 Para verificar el funcionamiento del chatbot, puedes enviar solicitudes POST usando herramientas como Postman o cualquier cliente HTTP.
 
@@ -70,5 +70,5 @@ El chatbot debería devolver una respuesta en formato JSON con la información s
 ### **Consideraciones adicionales**
 
 - **Manejo de errores**: En caso de que el chatbot no pueda procesar la pregunta, la API debería devolver un mensaje de error con el código de estado HTTP correspondiente.
-- **Identificación del conversational flow**: Recuerda que el campo `conversation_id` es clave para mantener el contexto en una conversación. Usar un mismo `conversation_id` para preguntas relacionadas ayudará al chatbot a ofrecer respuestas más contextuales.
+- **Identificación del conversational flow**: El campo `conversation_id` es clave para mantener el contexto en una conversación. Usar un mismo `conversation_id` para preguntas relacionadas ayudará al chatbot a ofrecer respuestas más contextuales.
 
