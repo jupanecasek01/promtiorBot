@@ -16,11 +16,11 @@ groq_key = os.getenv("GROQ_API_KEY")
 file_path = os.getenv("PDF_PATH")
 promtior_services_url= os.getenv("PROMTIOR_URL")
 
-GROQ_LLM_70 = ChatGroq(model="llama3-70b-8192")
+
 GROQ_LLM_8 = ChatGroq(model="llama3-8b-8192")
 
-conversation_with_summary_70b = ConversationChain(llm=GROQ_LLM_70)
 conversation_with_summary_8b = ConversationChain(llm=GROQ_LLM_8)
+
 
 def load_pdf_content(pdf_path):
     loader = PyPDFLoader(pdf_path)
@@ -93,7 +93,7 @@ def service_information_response(state):
     input_text = prompt.template.format(
         initial_question=state["initial_question"], web_text=web_text, pdf_text=pdf_text
     )
-    response = conversation_with_summary_70b.predict(input=input_text)
+    response = conversation_with_summary_8b.predict(input=input_text)
     state["final_response"] = response
     state["conversation_history"].append({"role": "assistant", "content": response})
 
@@ -115,7 +115,7 @@ def founding_information_response(state):
     input_text = prompt.template.format(
         initial_question=state["initial_question"], pdf_text=pdf_text
     )
-    response = conversation_with_summary_70b.predict(input=input_text)
+    response = conversation_with_summary_8b.predict(input=input_text)
     state["final_response"] = response
     state["conversation_history"].append({"role": "assistant", "content": response})
 
