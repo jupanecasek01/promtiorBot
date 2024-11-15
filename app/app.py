@@ -2,10 +2,18 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from app.bot import execute_agent
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Ruta raíz
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the Promtior Bot API!"}
