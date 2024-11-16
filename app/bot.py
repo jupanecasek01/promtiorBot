@@ -11,6 +11,9 @@ from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from langchain_community.document_loaders.recursive_url_loader import RecursiveUrlLoader
 
+from datetime import datetime, timedelta
+
+
 load_dotenv()
 groq_key = os.getenv("GROQ_API_KEY")
 file_path = os.getenv("PDF_PATH")
@@ -21,6 +24,17 @@ GROQ_LLM_70 = ChatGroq(model="llama3-70b-8192")
 
 conversation_with_summary_70b = ConversationChain(llm=GROQ_LLM_70)
 conversation_with_summary_8b = ConversationChain(llm=GROQ_LLM_8)
+
+def initialize_cache_variables():
+    global lastTimeFetchServices
+    global lastTimeFetchFounding
+    global cacheServices
+    global cacheFounding
+    cacheServices = ""
+    cacheFounding = ""
+    lastTimeFetchServices = datetime.now()
+    lastTimeFetchFounding = datetime.now()
+
 
 def load_pdf_content(pdf_path):
     loader = PyPDFLoader(pdf_path)
@@ -45,7 +59,7 @@ class GraphState(TypedDict):
     final_response: str
     num_steps: int
     conversation_history: List[Dict[str, str]]
-
+    conversation_id: id
 
 @traceable
 def categorize_question(state):
@@ -74,51 +88,67 @@ def categorize_question(state):
 
 @traceable
 def service_information_response(state):
-    pdf_text = load_pdf_content(file_path)
-    web_text = docs
+    global lastTimeFetchServices
+    global cacheServices
+    timeSinceFetchServicesLastTime= datetime.now() - lastTimeFetchServices
+    if(len(cacheServices)>0 and timeSinceFetchServicesLastTime < timedelta(minutes=30)):
+        state["final_response"] = cacheServices
+    else:
+        lastTimeFetchServices= datetime.now()
+        pdf_text = load_pdf_content(file_path)
+        web_text = docs
 
-    prompt = PromptTemplate(
-        template="""\
-            You are an assistant for the Promtior website. Your task is to provide a clear, kind and concise explanation of the services the company offers, based on the provided information. Do not mention where the information comes from (website or PDF), just focus on presenting the services clearly in English.
+        prompt = PromptTemplate(
+            template="""\
+                You are an assistant for the Promtior website. Your task is to provide a clear, kind and concise explanation of the services the company offers, based on the provided information. Do not mention where the information comes from (website or PDF), just focus on presenting the services clearly in English.
 
-    QUESTION CONTENT (the user's question):\n{initial_question}\n
+        QUESTION CONTENT (the user's question):\n{initial_question}\n
 
-    MAIN INFORMATION (from the Promtior website):\n{web_text}\n
+        MAIN INFORMATION (from the Promtior website):\n{web_text}\n
 
-    ADDITIONAL CONTEXT (from the PDF document):\n{pdf_text}\n
+        ADDITIONAL CONTEXT (from the PDF document):\n{pdf_text}\n
 
-    Please combine the relevant details from the website and the PDF to answer the question, focusing on the services offered by Promtior.
-    """
-    )
+        Please combine the relevant details from the website and the PDF to answer the question, focusing on the services offered by Promtior.
+        """
+        )
 
-    input_text = prompt.template.format(
-        initial_question=state["initial_question"], web_text=web_text, pdf_text=pdf_text
-    )
-    response = conversation_with_summary_70b.predict(input=input_text)
-    state["final_response"] = response
-    state["conversation_history"].append({"role": "assistant", "content": response})
+        input_text = prompt.template.format(
+            initial_question=state["initial_question"], web_text=web_text, pdf_text=pdf_text
+        )
+        response = conversation_with_summary_70b.predict(input=input_text)
+        state["final_response"] = response
+        cacheServices= response
+        state["conversation_history"].append({"role": "assistant", "content": response})
 
     return state
 
 @traceable
 def founding_information_response(state):
-    pdf_text = load_pdf_content(file_path)
-    
-    prompt = PromptTemplate(
-    template="""\
-    You are an assistant for the Promtior website. Respond kindly with appropriate information in English, omitting references to where it was sourced.
-    
-    QUESTION CONTENT:\n{initial_question}\n   
-    MAIN INFORMATION (from PDF):\n{pdf_text}
-    """
-    )
+    global lastTimeFetchFounding
+    global cacheFounding 
+    timeSinceFetchFoundingLastTime= datetime.now() - lastTimeFetchFounding
+    if(len(cacheFounding)>0 and timeSinceFetchFoundingLastTime < timedelta(days=30)):
+        state["final_response"] = cacheFounding
+    else:
+        lastTimeFetchFounding= datetime.now()
+        pdf_text = load_pdf_content(file_path)
+        
+        prompt = PromptTemplate(
+        template="""\
+        You are an assistant for the Promtior website. Respond kindly with appropriate information in English, omitting references to where it was sourced.
+        
+        QUESTION CONTENT:\n{initial_question}\n   
+        MAIN INFORMATION (from PDF):\n{pdf_text}
+        """
+        )
 
-    input_text = prompt.template.format(
-        initial_question=state["initial_question"], pdf_text=pdf_text
-    )
-    response = conversation_with_summary_70b.predict(input=input_text)
-    state["final_response"] = response
-    state["conversation_history"].append({"role": "assistant", "content": response})
+        input_text = prompt.template.format(
+            initial_question=state["initial_question"], pdf_text=pdf_text
+        )
+        response = conversation_with_summary_70b.predict(input=input_text)
+        state["final_response"] = response
+        cacheFounding= response
+        state["conversation_history"].append({"role": "assistant", "content": response})
 
     return state
 

@@ -1,8 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from app.bot import execute_agent
+from app.bot import execute_agent, initialize_cache_variables
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime, timedelta
+
 
 app = FastAPI()
 
@@ -13,6 +15,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+initialize_cache_variables()
 
 @app.get("/")
 async def read_root():
